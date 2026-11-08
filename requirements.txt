@@ -8,3 +8,4 @@ streamlit
 pandas
 google-genai
 langchain-groq
+langchain-google-genai
