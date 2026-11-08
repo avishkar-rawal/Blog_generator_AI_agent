@@ -27,5 +27,7 @@ Generated Markdown files are saved in `generated_markdowns/`. Generated images a
 
 ## Resources
 
+I followed these resources while learning and building this project:
+
 - [YouTube tutorial](https://www.youtube.com/watch?v=Ou_v9lk0rxg&t=2251s)
 - [CampusX blog-writing-agent repository](https://github.com/campusx-official/blog-writing-agent)
