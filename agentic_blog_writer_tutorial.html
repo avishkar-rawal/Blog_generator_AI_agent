@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agentic Blog Writer - How It Works</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: #101f33;
+      --panel-2: #142942;
+      --ink: #edf5ff;
+      --muted: #a9bdd4;
+      --cyan: #62ddff;
+      --green: #70e1a1;
+      --yellow: #ffd166;
+      --pink: #ff8bb5;
+      --line: #2b4563;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 75% 10%, #123151 0, var(--bg) 42%);
+      color: var(--ink);
+      font: 16px/1.45 Segoe UI, system-ui, sans-serif;
+      overflow: hidden;
+    }
+    .deck { height: 100vh; position: relative; }
+    .slide {
+      display: none;
+      height: 100vh;
+      padding: 6vh 8vw 10vh;
+      overflow: auto;
+    }
+    .slide.active { display: block; }
+    h1 { font-size: clamp(2.4rem, 6vw, 5.5rem); line-height: 1.02; margin: 0 0 1.2rem; }
+    h2 { font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.08; margin: 0 0 1.4rem; }
+    h3 { color: var(--cyan); margin: .2rem 0 .55rem; }
+    p { max-width: 1000px; color: var(--muted); font-size: clamp(1rem, 1.5vw, 1.35rem); }
+    ul { max-width: 1050px; color: var(--muted); font-size: clamp(1rem, 1.35vw, 1.2rem); }
+    li { margin: .55rem 0; }
+    strong { color: var(--ink); }
+    code, pre {
+      font-family: Consolas, "Courier New", monospace;
+      color: #d7f7ff;
+    }
+    pre {
+      background: #06101c;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      overflow: auto;
+      max-width: 1100px;
+      font-size: .9rem;
+    }
+    .eyebrow {
+      color: var(--green);
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .subtitle { font-size: 1.5rem; color: var(--muted); max-width: 850px; }
+    .accent { color: var(--cyan); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; max-width: 1150px; }
+    .card {
+      background: linear-gradient(145deg, var(--panel), #0c192b);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.1rem 1.2rem;
+    }
+    .card p, .card li { font-size: 1rem; }
+    .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: .55rem; max-width: 1200px; margin: 2rem 0; }
+    .node {
+      flex: 1 1 145px;
+      min-width: 135px;
+      padding: 1rem .7rem;
+      text-align: center;
+      background: var(--panel-2);
+      border: 1px solid var(--cyan);
+      border-radius: 13px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+    .arrow { align-self: center; color: var(--yellow); font-size: 1.6rem; }
+    .tag {
+      display: inline-block;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: .25rem .7rem;
+      color: var(--cyan);
+      margin: .2rem;
+      background: #0c1a2c;
+    }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; max-width: 1200px; }
+    .callout {
+      border-left: 4px solid var(--yellow);
+      background: #1b2a3d;
+      padding: .8rem 1rem;
+      max-width: 1050px;
+      color: var(--muted);
+    }
+    .small { font-size: .92rem; color: var(--muted); }
+    .footer {
+      position: fixed; left: 8vw; right: 8vw; bottom: 1.5rem;
+      display: flex; justify-content: space-between; color: var(--muted); font-size: .85rem;
+      pointer-events: none;
+    }
+    .controls { pointer-events: auto; display: flex; gap: .4rem; }
+    button {
+      border: 1px solid var(--line); background: #10233a; color: var(--ink);
+      border-radius: 8px; padding: .4rem .7rem; cursor: pointer;
+    }
+    button:hover { border-color: var(--cyan); }
+    @media (max-width: 700px) {
+      .slide { padding: 5vh 6vw 12vh; }
+      .two { grid-template-columns: 1fr; }
+      .arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+<main class="deck">
+  <section class="slide active">
+    <div class="eyebrow">Project tutorial</div>
+    <h1>How the <span class="accent">Agentic Blog Writer</span> Works</h1>
+    <p class="subtitle">A visual walkthrough of the LangGraph agent that researches, plans, writes, illustrates, and saves a technical blog - plus the Streamlit interface around it.</p>
+    <div class="flow">
+      <div class="node">User topic</div><div class="arrow">→</div>
+      <div class="node">Agent graph</div><div class="arrow">→</div>
+      <div class="node">Markdown + images</div><div class="arrow">→</div>
+      <div class="node">Streamlit preview</div>
+    </div>
+    <p class="small">Use Left/Right arrow keys, Space, or the buttons below to navigate.</p>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Learning goals</div>
+    <h2>What you should understand</h2>
+    <div class="grid">
+      <div class="card"><h3>Agentic AI</h3><p>Why this is more than one prompt: the system makes decisions, delegates work, uses tools, and reduces results.</p></div>
+      <div class="card"><h3>LangGraph</h3><p>How a typed shared state moves through router, research, planner, workers, and reducer nodes.</p></div>
+      <div class="card"><h3>Blog production</h3><p>How an outline becomes parallel sections, then one ordered Markdown document.</p></div>
+      <div class="card"><h3>Streamlit</h3><p>How the Python UI starts runs, shows progress, previews Markdown, and packages downloads.</p></div>
+    </div>
+    <div class="callout"><strong>Core idea:</strong> the LLM is not the whole agent. The agent is the LLM plus state, tools, routing logic, and a loop that turns decisions into actions.</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Big picture</div>
+    <h2>One request becomes a multi-stage workflow</h2>
+    <div class="flow">
+      <div class="node">1. Router<br><span class="small">research?</span></div><div class="arrow">→</div>
+      <div class="node">2. Research<br><span class="small">Tavily</span></div><div class="arrow">→</div>
+      <div class="node">3. Orchestrator<br><span class="small">Plan</span></div><div class="arrow">→</div>
+      <div class="node">4. Workers<br><span class="small">sections</span></div><div class="arrow">→</div>
+      <div class="node">5. Reducer<br><span class="small">merge + images</span></div>
+    </div>
+    <ul>
+      <li><strong>Router:</strong> decides whether current information is needed.</li>
+      <li><strong>Research:</strong> searches only when routing says it is necessary.</li>
+      <li><strong>Orchestrator:</strong> turns the topic and evidence into 5-9 concrete tasks.</li>
+      <li><strong>Workers:</strong> write tasks independently, enabling fan-out parallelism.</li>
+      <li><strong>Reducer:</strong> restores order, creates image placeholders, generates images, and saves the result.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Agent memory</div>
+    <h2>State is the shared workspace</h2>
+    <p>Every node receives a state object and returns updates. The state is the agent's working memory for one blog run.</p>
+    <pre>class State(TypedDict):
+    topic: str
+    mode: str
+    needs_research: bool
+    queries: List[str]
+    evidence: List[EvidenceItem]
+    plan: Optional[Plan]
+    sections: Annotated[List[tuple[int, str]], operator.add]
+    merged_md: str
+    image_specs: List[dict]
+    final: str</pre>
+    <div class="grid">
+      <div class="card"><h3>Inputs</h3><p><code>topic</code> and the initial empty fields come from the UI.</p></div>
+      <div class="card"><h3>Updates</h3><p>Nodes add research, a plan, section text, image specs, and final Markdown.</p></div>
+      <div class="card"><h3>Reducer rule</h3><p><code>operator.add</code> lets parallel workers append their section results into one list.</p></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Decision making</div>
+    <h2>1. The router chooses the path</h2>
+    <p>The router is a small decision-making agent. It classifies the topic into a mode and proposes queries when freshness matters.</p>
+    <div class="two">
+      <div class="card"><h3>closed_book</h3><p>Evergreen concepts and fundamentals. Skip web research and go directly to planning.</p></div>
+      <div class="card"><h3>hybrid</h3><p>Mostly evergreen, but current tools, models, or examples improve the article. Research is enabled.</p></div>
+      <div class="card"><h3>open_book</h3><p>Volatile subjects such as latest news, rankings, prices, or policy. Recent evidence is required.</p></div>
+      <div class="card"><h3>Structured decision</h3><p>The model returns a validated <code>RouterDecision</code>: mode, boolean, reason, and queries.</p></div>
+    </div>
+    <pre>g.add_conditional_edges(
+    "router", route_next,
+    {"research": "research", "orchestrator": "orchestrator"}
+)</pre>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Tool use</div>
+    <h2>2. Research is conditional, not automatic</h2>
+    <p>When research is requested, the graph calls Tavily for each router-generated query, normalizes results, and asks the LLM to produce a clean evidence pack.</p>
+    <div class="flow">
+      <div class="node">Queries</div><div class="arrow">→</div>
+      <div class="node">Tavily search</div><div class="arrow">→</div>
+      <div class="node">Normalize URLs</div><div class="arrow">→</div>
+      <div class="node">Deduplicate</div><div class="arrow">→</div>
+      <div class="node">Evidence state</div>
+    </div>
+    <ul>
+      <li>Each item keeps title, URL, snippet, source, and optional publication date.</li>
+      <li>Open-book mode filters evidence using the configured as-of date and recency window.</li>
+      <li>Workers are instructed to cite only evidence supplied by the graph for current claims.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Planning</div>
+    <h2>3. The orchestrator creates a production plan</h2>
+    <p>The orchestrator does not write the whole blog. It creates a structured plan that makes the work divisible and testable.</p>
+    <pre>Plan(
+  blog_title="...",
+  audience="backend and ML developers",
+  tone="technical",
+  blog_kind="tutorial",
+  tasks=[
+    Task(id=1, title="...", goal="...",
+         bullets=[...], target_words=320),
+    ...
+  ]
+)</pre>
+    <div class="grid">
+      <div class="card"><h3>5-9 tasks</h3><p>Enough coverage without making the plan unmanageable.</p></div>
+      <div class="card"><h3>Concrete bullets</h3><p>Workers know exactly what to explain, compare, build, or verify.</p></div>
+      <div class="card"><h3>Quality flags</h3><p>Tasks can require research, citations, or a code sketch.</p></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Parallel generation</div>
+    <h2>4. Fan-out: one worker per section</h2>
+    <p>The plan is transformed into LangGraph <code>Send</code> messages. Each worker receives one task plus the shared context.</p>
+    <div class="flow">
+      <div class="node">Plan</div><div class="arrow">↘</div>
+      <div class="node">Worker 1<br>intro</div><div class="arrow">→</div>
+      <div class="node">Worker 2<br>math</div><div class="arrow">→</div>
+      <div class="node">Worker 3<br>code</div>
+    </div>
+    <div class="callout">Parallelism is the important agentic pattern: the orchestrator delegates independent work rather than asking one model call to produce a giant document.</div>
+    <ul>
+      <li>Each worker outputs only one Markdown section beginning with <code>##</code>.</li>
+      <li>Workers receive blog kind, tone, audience, task bullets, evidence, and recency rules.</li>
+      <li>Each result carries its task ID so the reducer can restore the intended order.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Writing contract</div>
+    <h2>What each worker is told to do</h2>
+    <div class="grid">
+      <div class="card"><h3>Coverage</h3><p>Cover every bullet in order and stay within the target word range.</p></div>
+      <div class="card"><h3>Scope</h3><p>Follow the blog kind. A news roundup should discuss events and implications, not drift into a tutorial.</p></div>
+      <div class="card"><h3>Grounding</h3><p>For open-book or citation-required tasks, cite only the supplied evidence URLs.</p></div>
+      <div class="card"><h3>Code</h3><p>If a task requires code, include a minimal working sketch rather than vague pseudocode.</p></div>
+    </div>
+    <pre>section_md = llm.invoke([
+    SystemMessage(content=WORKER_SYSTEM),
+    HumanMessage(content=task_context)
+]).content.strip()</pre>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Reduction</div>
+    <h2>5. The reducer turns parts into a blog</h2>
+    <div class="flow">
+      <div class="node">Sort by task ID</div><div class="arrow">→</div>
+      <div class="node">Join Markdown</div><div class="arrow">→</div>
+      <div class="node">Plan images</div><div class="arrow">→</div>
+      <div class="node">Generate / replace</div><div class="arrow">→</div>
+      <div class="node">Write files</div>
+    </div>
+    <p>The reducer is itself a subgraph:</p>
+    <pre>merge_content
+      ↓
+decide_images
+      ↓
+generate_and_place_images</pre>
+    <ul>
+      <li><code>merge_content</code> creates the complete draft in stable section order.</li>
+      <li><code>decide_images</code> may insert up to three exact placeholders such as <code>[[IMAGE_1]]</code>.</li>
+      <li><code>generate_and_place_images</code> replaces placeholders with Markdown image links and saves the final file.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Images and persistence</div>
+    <h2>Two model integrations, two responsibilities</h2>
+    <div class="two">
+      <div class="card"><h3>Text model</h3><p>The configured <code>ChatGroq</code> client creates routing decisions, evidence packs, plans, sections, and image plans.</p></div>
+      <div class="card"><h3>Image model</h3><p><code>google-genai</code> calls Gemini <code>gemini-2.5-flash-image</code> using <code>GOOGLE_API_KEY_image</code>.</p></div>
+    </div>
+    <pre>OUTPUT_DIR = Path(__file__).resolve().parent / "generated_markdowns"
+OUTPUT_DIR / f"{safe_title}.md"
+OUTPUT_DIR / "images" / image_filename</pre>
+    <ul>
+      <li>Markdown goes into <code>generated_markdowns</code>.</li>
+      <li>Images go into its <code>images</code> child directory.</li>
+      <li>If image generation fails, the code keeps the article usable by inserting an explanatory failure block.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">What is Streamlit?</div>
+    <h2>Streamlit turns Python into a web app</h2>
+    <p>Streamlit is a Python framework for building interactive data and AI interfaces without separately writing a frontend in React, JavaScript, or HTML.</p>
+    <div class="grid">
+      <div class="card"><h3>Rerun model</h3><p>When a user interacts with a widget, Streamlit reruns the script and preserves selected values in session state.</p></div>
+      <div class="card"><h3>Widgets</h3><p><code>st.text_area</code>, <code>st.date_input</code>, and <code>st.button</code> collect user input.</p></div>
+      <div class="card"><h3>Layout</h3><p>Sidebar, tabs, columns, expanders, status boxes, and download buttons create the interface.</p></div>
+      <div class="card"><h3>Python-native</h3><p>The UI and backend share Python objects, so the app imports the compiled LangGraph directly.</p></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Streamlit in this project</div>
+    <h2>How the UI controls the agent</h2>
+    <div class="flow">
+      <div class="node">Enter topic</div><div class="arrow">→</div>
+      <div class="node">Click Generate</div><div class="arrow">→</div>
+      <div class="node">Build inputs</div><div class="arrow">→</div>
+      <div class="node">Stream app</div><div class="arrow">→</div>
+      <div class="node">Render result</div>
+    </div>
+    <pre>inputs = {
+  "topic": topic.strip(),
+  "as_of": as_of.isoformat(),
+  "sections": [],
+  "image_specs": [],
+  ...
+}
+for kind, payload in try_stream(app, inputs):
+    ...
+</pre>
+    <ul>
+      <li>The frontend imports <code>app</code> from <code>bwa_backend.py</code>.</li>
+      <li><code>try_stream</code> attempts progress streaming, then falls back to invoke.</li>
+      <li>The current state is summarized as node names, evidence count, task count, image count, and completed sections.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">User experience</div>
+    <h2>What the user can see and download</h2>
+    <div class="grid">
+      <div class="card"><h3>Plan tab</h3><p>Title, audience, tone, blog kind, tasks, target words, and task requirements.</p></div>
+      <div class="card"><h3>Evidence tab</h3><p>Sources, publication dates, URLs, and the difference between research and closed-book runs.</p></div>
+      <div class="card"><h3>Markdown Preview</h3><p>Rendered article with local images, plus a direct Markdown download.</p></div>
+      <div class="card"><h3>Images tab</h3><p>Image plan, generated files, and image bundle download.</p></div>
+      <div class="card"><h3>Logs tab</h3><p>Recent graph events and payload summaries for debugging.</p></div>
+      <div class="card"><h3>Past blogs</h3><p>Previously saved Markdown files can be selected and loaded back into the app.</p></div>
+    </div>
+    <div class="callout"><strong>Important:</strong> Streamlit is the control panel and presentation layer. The agentic decisions still happen inside the LangGraph backend.</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Mental model</div>
+    <h2>Why this is agentic AI</h2>
+    <div class="grid">
+      <div class="card"><h3>Perceive</h3><p>Read the user's topic, date, and available context.</p></div>
+      <div class="card"><h3>Decide</h3><p>Route to research or skip it; choose the content mode.</p></div>
+      <div class="card"><h3>Plan</h3><p>Create a structured set of writing tasks and constraints.</p></div>
+      <div class="card"><h3>Act</h3><p>Search the web, invoke workers, call the image API, and write files.</p></div>
+      <div class="card"><h3>Coordinate</h3><p>Pass state between nodes and merge parallel outputs.</p></div>
+      <div class="card"><h3>Recover</h3><p>Use fallbacks and graceful image failure blocks so the article can still be delivered.</p></div>
+    </div>
+    <p>It is not autonomous in the human sense: its behavior is constrained by schemas, prompts, graph edges, API availability, and file paths.</p>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Debugging guide</div>
+    <h2>Where failures usually appear</h2>
+    <div class="grid">
+      <div class="card"><h3>Before the graph</h3><p>Missing <code>GROQ_API_KEY</code>, <code>TAVILY_API_KEY</code>, or <code>GOOGLE_API_KEY_image</code>; wrong model or dependency.</p></div>
+      <div class="card"><h3>During routing/planning</h3><p>Model does not support structured output, schema is rejected, or the request is blocked by the provider.</p></div>
+      <div class="card"><h3>During research</h3><p>No Tavily key/results gives an empty evidence list; open-book filtering may remove undated sources.</p></div>
+      <div class="card"><h3>During images</h3><p>Image key/model/quota/safety issue; the exception is converted into an article failure note.</p></div>
+      <div class="card"><h3>After success</h3><p>Relative paths, missing output folders, or stale Streamlit state can make a correct result look absent.</p></div>
+    </div>
+    <div class="callout">Debug in order: check environment variables without printing secrets, test a simple model call, inspect graph logs, then inspect output paths.</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Takeaway</div>
+    <h2>The complete story in one sentence</h2>
+    <p class="subtitle">The Streamlit app collects a topic and displays progress, while the LangGraph agent decides what to research, builds a plan, delegates section writing, merges the results, optionally creates diagrams, and persists a downloadable Markdown blog.</p>
+    <div class="flow">
+      <div class="node">UI input</div><div class="arrow">→</div>
+      <div class="node">Stateful decisions</div><div class="arrow">→</div>
+      <div class="node">Tool calls</div><div class="arrow">→</div>
+      <div class="node">Parallel writing</div><div class="arrow">→</div>
+      <div class="node">Artifact</div>
+    </div>
+    <h3>Suggested next experiments</h3>
+    <ul>
+      <li>Run the same topic once in closed-book mode and once in hybrid mode.</li>
+      <li>Watch the Logs tab and identify each node's state update.</li>
+      <li>Temporarily disable the image key and observe the graceful fallback in the final Markdown.</li>
+      <li>Change the worker task count and compare parallel generation behavior.</li>
+    </ul>
+  </section>
+</main>
+<div class="footer">
+  <span id="counter"></span>
+  <span class="controls">
+    <button id="prev" aria-label="Previous slide">←</button>
+    <button id="next" aria-label="Next slide">→</button>
+  </span>
+</div>
+<script>
+  const slides = [...document.querySelectorAll(".slide")];
+  let index = 0;
+  const counter = document.getElementById("counter");
+  function show(n) {
+    index = (n + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle("active", i === index));
+    counter.textContent = `${index + 1} / ${slides.length}`;
+    history.replaceState(null, "", `#${index + 1}`);
+  }
+  document.getElementById("prev").onclick = () => show(index - 1);
+  document.getElementById("next").onclick = () => show(index + 1);
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", " ", "PageDown"].includes(e.key)) { e.preventDefault(); show(index + 1); }
+    if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); show(index - 1); }
+    if (e.key === "Home") show(0);
+    if (e.key === "End") show(slides.length - 1);
+  });
+  const requested = Number(location.hash.slice(1));
+  show(Number.isFinite(requested) && requested > 0 ? requested - 1 : 0);
+</script>
+</body>
+</html>
